@@ -1,19 +1,87 @@
-require('dotenv').config();
+require('dotenv').config()
+let mongoose = require('mongoose');
+
+let db = "mongodb+srv://hardik:Kartik12@cluster0.vyrfcyn.mongodb.net/test?retryWrites=true&w=majority"
+mongoose.connect(db, { useNewUrlParser: true, useUnifiedTopology: true})
+  .then(() => {
+    console.log('Connected to the MongoDB Atlas')
+  })
+  .catch(err => {
+    console.log('Err connecting to the MongoDB Atlas', err)
+  })
+
+const personSchema = new mongoose.Schema({
+  name: {
+    required: true,
+    type: String,
+  },
+  age: {
+    required: true,
+    type: Number,
+  },
+  favoriteFoods: {
+    required: false,
+    type: [String]
+  }
+})
+
+let Person = mongoose.model('Person', personSchema);
 
 
-let Person;
+// console.log(Person)
+const createAndSavePerson = function(done) {
+  const somendra = new Person({
+    name: "Somendra Singh",
+    age: 58, 
+    favoriteFoods: ['Biryani', 'Daal Chawal']
+  })
 
-const createAndSavePerson = (done) => {
-  done(null /*, data*/);
+  somendra.save()
+    .then(() => {
+      console.log(`user added successfully: ${somendra}`)
+    })
+    .catch(err => {
+      console.error(`error occured at adding new user: ${err}`)
+    })
 };
+console.log(createAndSavePerson());
+
+const records = [
+  {
+    name: 'Kartik Singh',
+    age: 17,
+    favoriteFoods: ['Raajma', 'Keema']
+  },
+  {
+    name: 'Asmita Raghunathan',
+    age: 19,
+    favoriteFoods: ['Hardik', 'Shwarma']
+  }
+]
 
 const createManyPeople = (arrayOfPeople, done) => {
-  done(null /*, data*/);
+  Person.create(arrayOfPeople)
+    .then(rec => {
+      console.log(`record created successfully: ${rec}`)
+    })
+    .catch(err => {
+      console.error(`error creating the record: ${err}`)
+    })
 };
 
+console.log(createManyPeople(records))
+
 const findPeopleByName = (personName, done) => {
-  done(null /*, data*/);
+  Person.find({ name: personName })
+    .then(person => {
+      console.log(`person found`, person)
+    })
+    .catch(err => {
+      console.error('error finding the person', err)
+    })
 };
+
+console.log(findPeopleByName('Asmita Raghunathan'));
 
 const findOneByFood = (food, done) => {
   done(null /*, data*/);
